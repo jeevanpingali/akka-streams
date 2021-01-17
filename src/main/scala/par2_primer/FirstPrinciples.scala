@@ -78,5 +78,10 @@ object FirstPrinciples extends App {
   val map1 = selectedNames.to(printSink)
   map1.run()
 
+  val longNameFlow = Flow[String].filter(name => name.length > 5)
+  val limitFlow = Flow[String].take(2)
+  val nameSink = Sink.foreach[String](println)
+  namesSource.via(longNameFlow).via(limitFlow).to(nameSink).run()
+
   system.terminate()
 }
