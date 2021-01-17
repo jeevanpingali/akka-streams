@@ -7,8 +7,8 @@ import akka.stream.scaladsl.{Flow, Sink, Source}
 import scala.concurrent.Future
 
 object FirstPrinciples extends App {
-  implicit val system = ActorSystem("FirstPrinciples")
-  implicit val materilizer = ActorMaterializer()
+  implicit val system: ActorSystem = ActorSystem("FirstPrinciples")
+  implicit val materializer: ActorMaterializer = ActorMaterializer()
 
   // source
   val source = Source(1 to 10)
@@ -20,7 +20,7 @@ object FirstPrinciples extends App {
 
   graph.run()
 
-  // introduce flows, Akka stream components, to trnasform elements
+  // introduce flows, Akka stream components, to transform elements
   val flow = Flow[Int].map(x => x + 1)
   val sourceWithFlow = source.via(flow)
   val flowWithSink = flow.to(sink)
