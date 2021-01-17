@@ -74,7 +74,9 @@ object FirstPrinciples extends App {
   val names = List("First Name", "name", "Second Name", "Third", "Whatever Name")
   val namesSource = Source(names)
   val selectedNames = namesSource.filter(name => name.length > 5).take(2)
-  val printSink = selectedNames.runForeach(println)
+  val printSink = Sink.foreach[String](println)
+  val map1 = selectedNames.to(printSink)
+  map1.run()
 
   system.terminate()
 }
