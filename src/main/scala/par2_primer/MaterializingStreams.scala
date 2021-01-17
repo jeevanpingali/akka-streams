@@ -33,5 +33,24 @@ object MaterializingStreams extends App {
     case Failure(ex) => println(s"Stream processing failed due to: ${ex.getMessage}")
   }
 
+  // materialized - sugars
+  val sum = Source(1 to 10).runWith(Sink.reduce[Int](_ + _))
+  sum.onComplete{
+    case Success(sumValue) => println(s"Sum is $sumValue")
+    case Failure(ex) => println(s"Stream processing failed due to: ${ex.getMessage}")
+  }
+
+  val sum2 = Source(1 to 10).runReduce[Int](_ + _) // even shorter version
+  sum2.onComplete{
+    case Success(sumValue) => println(s"Sum2 is $sumValue")
+    case Failure(ex) => println(s"Stream processing failed due to: ${ex.getMessage}")
+  }
+
+  // backwards
+  Sink.foreach[Int](println).runWith(Source.single(42))
+
+  // both ways
+  Flow[Int].map(x => 2 * x).runWith(simpleSource, simpleSink)
+
   system.terminate()
 }
