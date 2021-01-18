@@ -52,5 +52,12 @@ object MaterializingStreams extends App {
   // both ways
   Flow[Int].map(x => 2 * x).runWith(simpleSource, simpleSink)
 
+  /**
+   * - return the last element out of a source (use Sink.last)
+   * - compute the total word count out of a stream of sentences
+   *  - map, fold, reduce
+   */
+  val sourceSentences = Source(List("This is line one", "This is another line"))
+
   system.terminate()
 }
