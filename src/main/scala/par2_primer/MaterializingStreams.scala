@@ -57,7 +57,21 @@ object MaterializingStreams extends App {
    * - compute the total word count out of a stream of sentences
    *  - map, fold, reduce
    */
-  val sourceSentences = Source(List("This is line one", "This is another line"))
+  val f1 = Source(1 to 10).toMat(Sink.last)(Keep.right).run()
+  val f2 = Source(1 to 10).runWith(Sink.last)
+
+  val sentenceSource = Source(List("Akka is awesome", "I love streams", "Materialzed values are whatever"))
+
+  val wordCountSink = Sink.fold[Int, String](0)((currentWords, newSentence) => currentWords + newSentence.split(" ").length)
+  val g1 = sentenceSource.toMat(wordCountSink)(Keep.right).run()
+  val g2 = sentenceSource.runWith(wordCountSink)
+  val g3 = sentenceSource.runFold(0)((currentWords, newSentence) => currentWords + newSentence.split(" ").length)
+
+  val wordCountFlow = Flow[String].fold[Int](0)((currentWords, newSentence) => currentWords + newSentence.split(" ").length)
+  val g4 = sentenceSource.via(wordCountFlow).toMat(Sink.head)(Keep.right).run()
+  val g5 = sentenceSource.viaMat(wordCountFlow)(Keep.right).toMat(Sink.head)(Keep.right).run()
+  val g6 = sentenceSource.via(wordCountFlow).runWith(Sink.head)
+  val g7 = wordCountFlow.runWith(sentenceSource, Sink.head)._2
 
   system.terminate()
 }
