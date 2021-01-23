@@ -4,8 +4,8 @@ package part3_graphs
  * write complex Akka Streams Graphs
  * familiarize with Graph DSL
  * non-linear components:
- *  fan-in
- *  fan-out
+ * fan-in
+ * fan-out
  */
 
 import akka.NotUsed
@@ -41,5 +41,28 @@ object GraphBasics extends App {
     }
   )
 
-  graph.run()
+  //  graph.run()
+
+  /**
+   * exercise 1: feed a source into 2 sinks at the same time (hint: use a broadcast)
+   */
+
+  val firstSink = Sink.foreach[Int](x => println(s"First sink: $x"))
+  val secondSink = Sink.foreach[Int](x => println(s"Second sink: $x"))
+
+  val graph2 = RunnableGraph.fromGraph(
+    GraphDSL.create() { implicit builder =>
+      import GraphDSL.Implicits._
+
+      val broadcast = builder.add(Broadcast[Int](2))
+
+      input ~> broadcast ~> firstSink
+      broadcast ~> secondSink
+
+      ClosedShape
+    }
+  )
+
+  graph2.run()
+
 }
