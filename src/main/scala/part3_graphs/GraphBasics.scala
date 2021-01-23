@@ -56,8 +56,9 @@ object GraphBasics extends App {
 
       val broadcast = builder.add(Broadcast[Int](2))
 
-      input ~> broadcast ~> firstSink
-      broadcast ~> secondSink
+      input ~> broadcast
+      broadcast.out(0) ~> firstSink
+      broadcast.out(1) ~> secondSink
 
       ClosedShape
     }
